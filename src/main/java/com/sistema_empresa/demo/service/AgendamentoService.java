@@ -72,4 +72,38 @@ public class AgendamentoService {
                 a.getStatus()
         );
     }
+
+
+    @Transactional
+    public AgendamentoResponse confirmar(Long agendamentoId) {
+        Agendamento agendamento = agendamentoRepository.findById(agendamentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+
+        if (agendamento.getStatus() != StatusAgendamento.PENDENTE) {
+            throw new IllegalStateException("Apenas agendamentos pendentes podem ser confirmados");
+        }
+
+        agendamento.setStatus(StatusAgendamento.CONFIRMADO);
+        return toResponse(agendamentoRepository.save(agendamento));
+    }
+
+    @Transactional
+    public AgendamentoResponse cancelar(Long agendamentoId) {
+        Agendamento agendamento = agendamentoRepository.findById(agendamentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+
+        if (agendamento.getStatus() == StatusAgendamento.CONCLUIDO) {
+            throw new IllegalStateException("Agendamento já concluído não pode ser cancelado");
+        }
+
+        agendamento.setStatus(StatusAgendamento.CANCELADO);
+        return toResponse(agendamentoRepository.save(agendamento));
+    }
+
+    public List<AgendamentoResponse> listarPorCliente(Long clienteId) {
+        return agendamentoRepository.findByClienteId(clienteId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
 }
