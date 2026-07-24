@@ -15,6 +15,10 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     List<Agendamento> findByProfissionalIdAndDataHoraInicioBetween(
             Long profissionalId, LocalDateTime inicio, LocalDateTime fim);
 
+    List<Agendamento> findByProfissionalIdAndDataHoraInicioBetweenAndStatusNot(
+            Long profissionalId, LocalDateTime inicio, LocalDateTime fim,
+            com.sistema_empresa.demo.domain.enums.StatusAgendamento status);
+
     // Query que verifica se existe algum agendamento do profissional
     // que se sobrepõe ao intervalo informado (usada na regra de conflito)
     @Query("""
